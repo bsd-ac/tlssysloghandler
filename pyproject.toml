@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tlssysloghandler"
+version = "1.0.0"
+description = "SysLogHandler with TLS"
+readme = "README.rst"
+license = {file = "LICENSE"}
+keywords = ["handler", "logging", "logger", "syslog", "tls"]
+requires-python = ">= 3.11"
+authors = [
+  {name = "A Tammy", email = "atammy@bsd.ac"},
+]
+classifiers = [
+  "Programming Language :: Python"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.isort]
+profile = "black"
