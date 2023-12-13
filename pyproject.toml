@@ -7,7 +7,7 @@ name = "tlssysloghandler"
 version = "1.0.3"
 description = "SysLogHandler with TLS"
 readme = "README.rst"
-license = "ISC"
+license = {text = "ISC"}
 keywords = ["handler", "logging", "logger", "syslog", "tls"]
 requires-python = ">= 3.11"
 authors = [
