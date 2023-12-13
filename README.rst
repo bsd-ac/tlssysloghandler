@@ -24,24 +24,29 @@ Usage
     logger.setLevel(logging.INFO)
 
     # with default system certificate store
-    handler1 = TLSSysLogHandler(address=('secure-logging.example.com', 6514), secure=True)
+    handler1 = TLSSysLogHandler(address=('secure-logging.example.com', 6514),
+                                socktype=socket.SOCK_STREAM,
+                                secure=True)
     logger.addHandler(handler1)
 
     # with custom certificates, via cafile/capath/cadata
     # refer to https://docs.python.org/3/library/ssl.html#ssl.create_default_context
     handler2 = TLSSysLogHandler(address=('secure-logging.example.com', 6514), 
-                               secure=(cafile='/path/to/ca/file'))
+                                socktype=socket.SOCK_STREAM,
+                                secure={cafile='/path/to/ca/file'})
     logger.addHandler(handler2)
 
     # with custom SSLContext
     context = ssl.create_default_context(cafile='/path/to/ca/file')
     handler3 = TLSSysLogHandler(address=('secure-logging.example.com', 6514), 
-			       secure=context)
+                                socktype=socket.SOCK_STREAM,
+                                secure=context)
     logger.addHandler(handler3)
 
     # or allow TLS without verification
     handler4 = TLSSysLogHandler(address=('secure-logging.example.com', 6514), 
-			       secure="noverify")
+                                socktype=socket.SOCK_STREAM,
+                                secure="noverify")
     logger.addHandler(handler4)
 
     logger.info('Hello World!')
