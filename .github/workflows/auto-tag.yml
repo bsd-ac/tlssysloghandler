@@ -10,6 +10,8 @@ jobs:
     steps:
     - name: Checkout main
       uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.TLSSYSLOG_TAGGING_PAT }}
     - name: The new tag
       id: computed-tag
       run: |

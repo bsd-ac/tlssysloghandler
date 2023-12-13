@@ -8,6 +8,11 @@ on:
 jobs:
   publish-pypi:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/tlssysloghandler
+    permissions:
+      id-token: write
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
