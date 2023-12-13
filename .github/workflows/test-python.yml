@@ -11,13 +11,18 @@ on:
 jobs:
   test-python:
     runs-on: ubuntu-latest
+    strategy:
+        matrix:
+          python-version:
+            - 3.11
+            - 3.12
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Setup python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.11
+          python-version: ${{ matrix.python-version }}
           cache: pipenv
       - name: Install dependencies
         run: |
