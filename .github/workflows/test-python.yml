@@ -20,6 +20,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Setup python
+        id: setup-python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
@@ -27,11 +28,11 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ~/.local/share/virtualenvs
-          key: ${{ runner.os }}-pipenv-${{ matrix.python-version }}-${{ hashFiles('Pipfile.lock') }}
+          key: ${{ runner.os }}-${{ runner.arch }}-pipenv-${{ matrix.python-version }}-${{ hashFiles('Pipfile.lock') }}
       - name: Install dependencies
         run: |
-          pip install pipenv
-          pipenv install --dev
+          pipx install pipenv
+          pipenv install --dev --python ${{ steps.setup-python.outputs.python-path }}
       - name: Run tests
         run: |
           pipenv run pytest -vvvv -s
