@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tlssysloghandler"
-version = "1.0.2"
+version = "1.0.3"
 description = "SysLogHandler with TLS"
 readme = "README.rst"
-license = {file = "LICENSE"}
+license = "ISC"
 keywords = ["handler", "logging", "logger", "syslog", "tls"]
 requires-python = ">= 3.11"
 authors = [
@@ -17,6 +17,10 @@ authors = [
 classifiers = [
   "Programming Language :: Python"
 ]
+
+[project.urls]
+Repository = "https://github.com/bsd-ac/tlssysloghandler"
+License = "https://github.com/bsd-ac/tlssysloghandler/blob/main/LICENSE"
 
 [tool.setuptools.packages.find]
 where = ["src"]
