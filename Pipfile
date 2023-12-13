@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+tlssysloghandler = {file = ".", editable = true}
+
+[dev-packages]
+black = "*"
+cryptography = "*"
+isort = "*"
+pytest = "*"
+pytest-cov = "*"
+
+[requires]
+python_version = "3.11"
