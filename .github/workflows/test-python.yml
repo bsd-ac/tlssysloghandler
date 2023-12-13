@@ -24,11 +24,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Manually cache pipenv
-        uses: actions/cache@v2
-        with:
-          path: ~/.local/share/virtualenvs
-          key: ${{ runner.os }}-${{ runner.arch }}-pipenv-${{ matrix.python-version }}-${{ hashFiles('Pipfile.lock') }}
       - name: Install dependencies
         run: |
           pipx install pipenv
