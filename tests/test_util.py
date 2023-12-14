@@ -14,12 +14,9 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.primitives import hashes, serialization
 
-import ssl
 import logging
-import socket
 import inspect
 
-from tlssysloghandler import TLSSysLogHandler
 
 SOCKET_PORT = int(os.environ.get("SOCKET_PORT", 56712))
 SOCKET_TIMEOUT = 5
@@ -42,58 +39,17 @@ class TestCertManager(TestCase):
         self.queue.close()
         self.tmpdir.cleanup()
 
-    def _start_server_worker(self, sock_family, sock_type, sock_addr, secure):
-        if sock_type != socket.SOCK_DGRAM and sock_type != socket.SOCK_STREAM:
-            raise ValueError(
-                "sock_type must be socket.SOCK_DGRAM or socket.SOCK_STREAM"
-            )
-        print(f"starting {sock_family} server on {sock_addr} with {sock_type}")
-        sock = socket.socket(sock_family, sock_type)
-        print("socket created")
-        sock.bind(*sock_addr)
-        print("socket bound at:", sock)
-        sock.settimeout(SOCKET_TIMEOUT)
-        print("socket settimeout")
-        oldsock = None
-        if sock_type == socket.SOCK_STREAM:
-            sock.listen(5)
-            print("socket listening")
-            if secure:
-                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                print("socket setsockopt")
-                context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-                print("secure socket context created")
-                context.load_cert_chain(certfile=self.pub_key, keyfile=self.priv_key)
-                print("secure socket cert loaded")
-                oldsock = sock
-                sock = context.wrap_socket(sock, server_side=True)
-                print("secure socket listening")
+    def _build_logger(self) -> logging.Logger:
+        stack = inspect.stack()
+        logger_name = "{}.{}".format(__name__, stack[1][3])
 
-            conn, addr = sock.accept()
-            print("socket accepted")
-            conn.settimeout(SOCKET_TIMEOUT)
-            print("conn socket settimeout")
-        else:
-            conn = sock
-        while True:
-            print("socket waiting for data")
-            data = conn.recv(1024)
-            if not data:
-                break
-            print("got data:", data.decode("utf-8"))
-            self.queue.put(data)
-        if sock_type == socket.SOCK_STREAM:
-            conn.close()
-        sock.close()
-        if oldsock:
-            oldsock.close()
+        test_logger = logging.getLogger(logger_name)
+        test_logger.setLevel(logging.DEBUG)
 
-    def _start_server(self, sock_family, sock_type, sock_addr, secure=False):
-        # start a listener on the socket in separate thread using threadpoolexecutor
-        self.executor.submit(
-            self._start_server_worker, sock_family, sock_type, sock_addr, secure
-        )
-        sleep(4)
+        for handler in test_logger.handlers:
+            test_logger.removeHandler(handler)
+
+        return test_logger
 
     # https://gist.github.com/bloodearnest/9017111a313777b9cce5
     # Copyright 2018 Simon Davy
