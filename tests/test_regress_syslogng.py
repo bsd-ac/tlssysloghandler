@@ -1,5 +1,6 @@
 import os
 import socket
+import ssl
 import subprocess
 from time import sleep
 import unittest
@@ -27,7 +28,7 @@ except FileNotFoundError:
 
 
 class TestSyslogNG(TestCertManager):
-    def _start_server(self, ip):
+    def _start_server(self):
         # create syslog-ng tls config
         config = """
 @version: 4.4
@@ -102,6 +103,7 @@ source net4_mutual_tls {{
         tls(
             key-file("{0}/syslog.key")
             cert-file("{0}/syslog.pub")
+            ca-file("{0}/syslog.pub")
             peer-verify(required-trusted)
         )
     );
@@ -115,6 +117,7 @@ source net6_mutual_tls {{
         tls(
             key-file("{0}/syslog.key")
             cert-file("{0}/syslog.pub")
+            ca-file("{0}/syslog.pub")
             peer-verify(required-trusted)
         )
     );
@@ -230,8 +233,8 @@ log {{
         self.server_pid.kill()
         self.server_pid.wait()
 
-    def test_syslogng_inet_DGRAM(self):
-        self._start_server("127.0.0.1")
+    def test_SYSLOGNG_INET4_DGRAM(self):
+        self._start_server()
 
         test_logger = self._build_logger()
 
@@ -252,8 +255,8 @@ log {{
         finally:
             self._stop_server()
 
-    def test_syslogng_inet_STREAM(self):
-        self._start_server("127.0.0.1")
+    def test_SYSLOGNG_INET4_STREAM(self):
+        self._start_server()
 
         test_logger = self._build_logger()
 
@@ -274,8 +277,8 @@ log {{
         finally:
             self._stop_server()
 
-    def test_syslogng_inet_TLS(self):
-        self._start_server("127.0.0.1")
+    def test_SYSLOGNG_INET4_TLS(self):
+        self._start_server()
 
         test_logger = self._build_logger()
 
@@ -298,8 +301,8 @@ log {{
         finally:
             self._stop_server()
 
-    def test_syslogng_unix_DGRAM(self):
-        self._start_server("127.0.0.1")
+    def test_SYSLOGNG_unix_DGRAM(self):
+        self._start_server()
 
         test_logger = self._build_logger()
 
@@ -320,8 +323,8 @@ log {{
         finally:
             self._stop_server()
 
-    def test_syslogng_unix_STREAM(self):
-        self._start_server("127.0.0.1")
+    def test_SYSLOGNG_unix_STREAM(self):
+        self._start_server()
 
         test_logger = self._build_logger()
 
@@ -343,8 +346,8 @@ log {{
         finally:
             self._stop_server()
 
-    def test_syslogng_inet6_DGRAM(self):
-        self._start_server("::1")
+    def test_SYSLOGNG_INET6_DGRAM(self):
+        self._start_server()
 
         test_logger = self._build_logger()
 
@@ -365,8 +368,8 @@ log {{
         finally:
             self._stop_server()
 
-    def test_syslogng_inet6_STREAM(self):
-        self._start_server("::1")
+    def test_SYSLOGNG_INET6_STREAM(self):
+        self._start_server()
 
         test_logger = self._build_logger()
 
@@ -387,8 +390,8 @@ log {{
         finally:
             self._stop_server()
 
-    def test_syslogng_inet6_TLS(self):
-        self._start_server("::1")
+    def test_SYSLOGNG_INET6_TLS(self):
+        self._start_server()
 
         test_logger = self._build_logger()
 
@@ -396,6 +399,70 @@ log {{
             address=("::1", SOCKET_PORT6_TLS),
             socktype=socket.SOCK_STREAM,
             secure={"cafile": self.tmpdir.name + "/syslog.pub"},
+        )
+        test_logger.addHandler(handler)
+
+        uuid_message = uuid.uuid4().hex
+        test_logger.critical(uuid_message)
+
+        sleep(2)
+
+        try:
+            with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+                data = f.read()
+                self.assertTrue(uuid_message in data)
+        finally:
+            self._stop_server()
+
+    def test_SYSLOGNG_INET4_MUTUAL_TLS(self):
+        self._start_server()
+
+        test_logger = self._build_logger()
+
+        # custom context for mutual TLS
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.load_cert_chain(
+            certfile=self.tmpdir.name + "/syslog.pub",
+            keyfile=self.tmpdir.name + "/syslog.key",
+        )
+        context.load_verify_locations(cafile=self.tmpdir.name + "/syslog.pub")
+
+        handler = TLSSysLogHandler(
+            address=("127.0.0.1", SOCKET_PORT4_MUTUAL_TLS),
+            socktype=socket.SOCK_STREAM,
+            secure=context,
+        )
+        test_logger.addHandler(handler)
+
+        uuid_message = uuid.uuid4().hex
+        test_logger.critical(uuid_message)
+
+        sleep(2)
+
+        try:
+            with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+                data = f.read()
+                self.assertTrue(uuid_message in data)
+        finally:
+            self._stop_server()
+
+    def test_SYSLOGNG_INET6_MUTUAL_TLS(self):
+        self._start_server()
+
+        test_logger = self._build_logger()
+
+        # custom context for mutual TLS
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context.load_cert_chain(
+            certfile=self.tmpdir.name + "/syslog.pub",
+            keyfile=self.tmpdir.name + "/syslog.key",
+        )
+        context.load_verify_locations(cafile=self.tmpdir.name + "/syslog.pub")
+
+        handler = TLSSysLogHandler(
+            address=("::1", SOCKET_PORT6_MUTUAL_TLS),
+            socktype=socket.SOCK_STREAM,
+            secure=context,
         )
         test_logger.addHandler(handler)
 
