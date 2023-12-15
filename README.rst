@@ -36,17 +36,23 @@ Usage
                                 secure={cafile='/path/to/ca/file'})
     logger.addHandler(handler2)
 
-    # with custom SSLContext
-    context = ssl.create_default_context(cafile='/path/to/ca/file')
+    # with custom SSLContext (e.g. for mutual TLS authentication)
+    context = ssl.create_default_context(
+        purpose=ssl.Purpose.SERVER_AUTH, cafile="/path/to/ca/file"
+    )
+    context.load_cert_chain(
+        certfile="/path/to/client/cert.pem",
+        keyfile="/path/to/client/priv.key",
+    )
     handler3 = TLSSysLogHandler(address=('secure-logging.example.com', 6514), 
                                 socktype=socket.SOCK_STREAM,
                                 secure=context)
     logger.addHandler(handler3)
 
-    # or allow TLS without verification
+    # or allow TLS without verification (not recommended)
     handler4 = TLSSysLogHandler(address=('secure-logging.example.com', 6514), 
                                 socktype=socket.SOCK_STREAM,
                                 secure="noverify")
     logger.addHandler(handler4)
 
-    logger.info('Hello World!')
+    logger.info('Hello, World!')
