@@ -386,12 +386,13 @@ log {{
         test_logger = self._build_logger()
 
         # custom context for mutual TLS
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context = ssl.create_default_context(
+            purpose=ssl.Purpose.SERVER_AUTH, cafile=self.tmpdir.name + "/syslog.pub"
+        )
         context.load_cert_chain(
             certfile=self.tmpdir.name + "/syslog.pub",
             keyfile=self.tmpdir.name + "/syslog.key",
         )
-        context.load_verify_locations(cafile=self.tmpdir.name + "/syslog.pub")
 
         handler = TLSSysLogHandler(
             address=("127.0.0.1", SOCKET_PORT4_MUTUAL_TLS),
@@ -413,12 +414,13 @@ log {{
         test_logger = self._build_logger()
 
         # custom context for mutual TLS
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+        context = ssl.create_default_context(
+            purpose=ssl.Purpose.SERVER_AUTH, cafile=self.tmpdir.name + "/syslog.pub"
+        )
         context.load_cert_chain(
             certfile=self.tmpdir.name + "/syslog.pub",
             keyfile=self.tmpdir.name + "/syslog.key",
         )
-        context.load_verify_locations(cafile=self.tmpdir.name + "/syslog.pub")
 
         handler = TLSSysLogHandler(
             address=("::1", SOCKET_PORT6_MUTUAL_TLS),

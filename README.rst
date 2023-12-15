@@ -37,12 +37,13 @@ Usage
     logger.addHandler(handler2)
 
     # with custom SSLContext (e.g. for mutual TLS authentication)
-    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    context = ssl.create_default_context(
+        purpose=ssl.Purpose.SERVER_AUTH, cafile="/path/to/ca/file"
+    )
     context.load_cert_chain(
         certfile="/path/to/client/cert.pem",
         keyfile="/path/to/client/priv.key",
     )
-    context.load_verify_locations(cafile="/path/to/ca/file")
     handler3 = TLSSysLogHandler(address=('secure-logging.example.com', 6514), 
                                 socktype=socket.SOCK_STREAM,
                                 secure=context)
