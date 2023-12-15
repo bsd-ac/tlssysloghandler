@@ -8,7 +8,11 @@ import socket
 
 from tlssysloghandler import TLSSysLogHandler
 
-from test_util import SOCKET_PORT, SOCKET_TIMEOUT, TestCertManager
+from test_util import SOCKET_PORT, TestCertManager
+
+SOCKET_TIMEOUT = 5
+SOCKET_BUFFERSIZE = 1024
+
 
 class TestTLSSysLogHandlerE2E(TestCertManager):
     def _start_server_worker(self, sock_family, sock_type, sock_addr, secure):

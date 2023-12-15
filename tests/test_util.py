@@ -5,8 +5,7 @@ import concurrent.futures
 import os
 import tempfile
 from time import sleep
-from unittest import TestCase, mock
-import uuid
+from unittest import TestCase
 
 from cryptography import x509
 from cryptography.x509.oid import NameOID
@@ -19,13 +18,12 @@ import inspect
 
 
 SOCKET_PORT = int(os.environ.get("SOCKET_PORT", 56712))
-SOCKET_TIMEOUT = 5
-SOCKET_BUFFERSIZE = 1024
 
 RSA_PUBLIC_EXPONENT = 65537
 RSA_KEY_SIZE = 2048
 
 # logger = logging.getLogger(__name__)
+
 
 class TestCertManager(TestCase):
     def setUp(self):
@@ -37,7 +35,7 @@ class TestCertManager(TestCase):
     def tearDown(self):
         self.executor.shutdown(wait=True)
         self.queue.close()
-        self.tmpdir.cleanup()
+        # self.tmpdir.cleanup()
 
     def _build_logger(self) -> logging.Logger:
         stack = inspect.stack()
