@@ -233,9 +233,15 @@ log {{
         self.server_pid.kill()
         self.server_pid.wait()
 
-    def test_SYSLOGNG_INET4_DGRAM(self):
+    def setUp(self):
+        super().setUp()
         self._start_server()
 
+    def tearDown(self):
+        self._stop_server()
+        super().tearDown()
+
+    def test_SYSLOGNG_INET4_DGRAM(self):
         test_logger = self._build_logger()
 
         handler = TLSSysLogHandler(
@@ -248,16 +254,11 @@ log {{
 
         sleep(2)
 
-        try:
-            with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
-                data = f.read()
-                self.assertTrue(uuid_message in data)
-        finally:
-            self._stop_server()
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
 
     def test_SYSLOGNG_INET4_STREAM(self):
-        self._start_server()
-
         test_logger = self._build_logger()
 
         handler = TLSSysLogHandler(
@@ -270,16 +271,11 @@ log {{
 
         sleep(2)
 
-        try:
-            with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
-                data = f.read()
-                self.assertTrue(uuid_message in data)
-        finally:
-            self._stop_server()
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
 
     def test_SYSLOGNG_INET4_TLS(self):
-        self._start_server()
-
         test_logger = self._build_logger()
 
         handler = TLSSysLogHandler(
@@ -294,16 +290,11 @@ log {{
 
         sleep(2)
 
-        try:
-            with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
-                data = f.read()
-                self.assertTrue(uuid_message in data)
-        finally:
-            self._stop_server()
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
 
     def test_SYSLOGNG_unix_DGRAM(self):
-        self._start_server()
-
         test_logger = self._build_logger()
 
         handler = TLSSysLogHandler(
@@ -316,16 +307,11 @@ log {{
 
         sleep(2)
 
-        try:
-            with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
-                data = f.read()
-                self.assertTrue(uuid_message in data)
-        finally:
-            self._stop_server()
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
 
     def test_SYSLOGNG_unix_STREAM(self):
-        self._start_server()
-
         test_logger = self._build_logger()
 
         handler = TLSSysLogHandler(
@@ -339,16 +325,11 @@ log {{
 
         sleep(2)
 
-        try:
-            with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
-                data = f.read()
-                self.assertTrue(uuid_message in data)
-        finally:
-            self._stop_server()
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
 
     def test_SYSLOGNG_INET6_DGRAM(self):
-        self._start_server()
-
         test_logger = self._build_logger()
 
         handler = TLSSysLogHandler(
@@ -361,16 +342,11 @@ log {{
 
         sleep(2)
 
-        try:
-            with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
-                data = f.read()
-                self.assertTrue(uuid_message in data)
-        finally:
-            self._stop_server()
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
 
     def test_SYSLOGNG_INET6_STREAM(self):
-        self._start_server()
-
         test_logger = self._build_logger()
 
         handler = TLSSysLogHandler(
@@ -383,16 +359,11 @@ log {{
 
         sleep(2)
 
-        try:
-            with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
-                data = f.read()
-                self.assertTrue(uuid_message in data)
-        finally:
-            self._stop_server()
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
 
     def test_SYSLOGNG_INET6_TLS(self):
-        self._start_server()
-
         test_logger = self._build_logger()
 
         handler = TLSSysLogHandler(
@@ -407,16 +378,11 @@ log {{
 
         sleep(2)
 
-        try:
-            with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
-                data = f.read()
-                self.assertTrue(uuid_message in data)
-        finally:
-            self._stop_server()
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
 
     def test_SYSLOGNG_INET4_MUTUAL_TLS(self):
-        self._start_server()
-
         test_logger = self._build_logger()
 
         # custom context for mutual TLS
@@ -439,16 +405,11 @@ log {{
 
         sleep(2)
 
-        try:
-            with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
-                data = f.read()
-                self.assertTrue(uuid_message in data)
-        finally:
-            self._stop_server()
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
 
     def test_SYSLOGNG_INET6_MUTUAL_TLS(self):
-        self._start_server()
-
         test_logger = self._build_logger()
 
         # custom context for mutual TLS
@@ -471,9 +432,6 @@ log {{
 
         sleep(2)
 
-        try:
-            with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
-                data = f.read()
-                self.assertTrue(uuid_message in data)
-        finally:
-            self._stop_server()
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
