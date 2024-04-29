@@ -67,6 +67,7 @@ source net4_tls {{
             key-file("{0}/syslog.key")
             cert-file("{0}/syslog.pub")
             peer-verify(optional-untrusted)
+            cipher-suite("ALL:@SECLEVEL=0")
         )
     );
 }};
@@ -96,6 +97,7 @@ source net6_tls {{
             key-file("{0}/syslog.key")
             cert-file("{0}/syslog.pub")
             peer-verify(optional-untrusted)
+            cipher-suite("ALL:@SECLEVEL=0")
         )
     );
 }};
@@ -136,6 +138,7 @@ source net4_tls10 {{
             cert-file("{0}/syslog.pub")
             peer-verify(optional-untrusted)
             ssl-options(no-tlsv11, no-tlsv12, no-tlsv13)
+            cipher-suite("ALL:@SECLEVEL=0")
         )
     );
 }};
@@ -362,6 +365,32 @@ log {{
             address=("127.0.0.1", SOCKET_PORT4_TLS),
             socktype=socket.SOCK_STREAM,
             secure={"cafile": self.tmpdir.name + "/syslog.pub"},
+        )
+        test_logger.addHandler(handler)
+
+        uuid_message = uuid.uuid4().hex
+        test_logger.critical(uuid_message)
+
+        sleep(2)
+
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
+
+    def test_SYSLOGNG_INET4_TLS10(self):
+        test_logger = self._build_logger()
+
+        context = ssl.create_default_context(
+            purpose=ssl.Purpose.SERVER_AUTH, cafile=self.tmpdir.name + "/syslog.pub"
+        )
+        context.set_ciphers('ALL:@SECLEVEL=0')
+        context.minimum_version = ssl.TLSVersion.TLSv1
+        context.maximum_version = ssl.TLSVersion.TLSv1
+
+        handler = TLSSysLogHandler(
+            address=("127.0.0.1", SOCKET_PORT4_TLS10),
+            socktype=socket.SOCK_STREAM,
+            secure=context,
         )
         test_logger.addHandler(handler)
 
