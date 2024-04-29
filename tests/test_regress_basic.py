@@ -277,7 +277,7 @@ class TestTLSSysLogHandlerE2E(TestCertManager):
     def test_e2e_INET6_STREAM_SECURE_VERIFY_FAIL_WRONG_HOSTNAME(self, mock_getaddrinfo):
         # try listening on secure-logging.example.com (mocked to return address "::1")
         mock_getaddrinfo.return_value = [
-            (socket.AF_INET6, socket.SOCK_STREAM, 6, "", ("::1", 56712, 0, 0))
+            (socket.AF_INET6, socket.SOCK_STREAM, 6, "", ("::1", SOCKET_PORT, 0, 0))
         ]
 
         server_socket_addr = ("::1", SOCKET_PORT)

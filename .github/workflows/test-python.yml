@@ -28,6 +28,10 @@ jobs:
         run: |
           pipx install pipenv
           pipenv install --dev --python ${{ steps.setup-python.outputs.python-path }}
+      - name: Show OpenSSL ciphers
+        run: |
+          openssl ciphers -v
+          pipenv run python -c "import ssl; import pprint; ctx = ssl.create_default_context(); ctx.set_ciphers('ALL:@SECLEVEL=0'); pprint.pprint(ctx.get_ciphers())"
       - name: Run tests
         run: |
           pipenv run pytest -vvvv -s
