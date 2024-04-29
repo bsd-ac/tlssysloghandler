@@ -28,6 +28,9 @@ jobs:
         run: |
           pipx install pipenv
           pipenv install --dev --python ${{ steps.setup-python.outputs.python-path }}
+      - name: Show OpenSSL ciphers
+        run: |
+          openssl ciphers -v
       - name: Run tests
         run: |
           pipenv run pytest -vvvv -s
