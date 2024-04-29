@@ -467,6 +467,32 @@ log {{
                 secure=context,
             )
 
+    def test_SYSLOGNG_INET4_TLS10_TO_DEFAULT_LISTENER(self):
+        test_logger = self._build_logger()
+
+        context = ssl.create_default_context(
+            purpose=ssl.Purpose.SERVER_AUTH, cafile=self.tmpdir.name + "/syslog.pub"
+        )
+        context.set_ciphers("ALL:@SECLEVEL=0")
+        context.minimum_version = ssl.TLSVersion.TLSv1
+        context.maximum_version = ssl.TLSVersion.TLSv1
+
+        handler = TLSSysLogHandler(
+            address=("127.0.0.1", SOCKET_PORT4_TLS),
+            socktype=socket.SOCK_STREAM,
+            secure=context,
+        )
+        test_logger.addHandler(handler)
+
+        uuid_message = uuid.uuid4().hex
+        test_logger.critical(uuid_message)
+
+        sleep(2)
+
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
+
     def test_SYSLOGNG_INET4_TLS_ENFORCE_MINIMUM(self):
         test_logger = self._build_logger()
 
