@@ -18,6 +18,10 @@ SOCKET_PORT6_STREAM = SOCKET_PORT + 4
 SOCKET_PORT6_TLS = SOCKET_PORT + 5
 SOCKET_PORT4_MUTUAL_TLS = SOCKET_PORT + 6
 SOCKET_PORT6_MUTUAL_TLS = SOCKET_PORT + 7
+SOCKET_PORT4_TLS10 = SOCKET_PORT + 8
+SOCKET_PORT4_TLS11 = SOCKET_PORT + 9
+SOCKET_PORT4_TLS12 = SOCKET_PORT + 10
+SOCKET_PORT4_TLS13 = SOCKET_PORT + 11
 
 
 # check if syslog-ng is installed else skip tests
@@ -122,6 +126,58 @@ source net6_mutual_tls {{
         )
     );
 }};
+source net4_tls10 {{
+    network(
+        ip("127.0.0.1")
+        transport("tls")
+        port({9})
+        tls(
+            key-file("{0}/syslog.key")
+            cert-file("{0}/syslog.pub")
+            peer-verify(optional-untrusted)
+            ssl-options(no-tlsv11, no-tlsv12, no-tlsv13)
+        )
+    );
+}};
+source net4_tls11 {{
+    network(
+        ip("127.0.0.1")
+        transport("tls")
+        port({10})
+        tls(
+            key-file("{0}/syslog.key")
+            cert-file("{0}/syslog.pub")
+            peer-verify(optional-untrusted)
+            ssl-options(no-tlsv1, no-tlsv12, no-tlsv13)
+        )
+    );
+}};
+source net4_tls12 {{
+    network(
+        ip("127.0.0.1")
+        transport("tls")
+        port({11})
+        tls(
+            key-file("{0}/syslog.key")
+            cert-file("{0}/syslog.pub")
+            peer-verify(optional-untrusted)
+            ssl-options(no-tlsv1, no-tlsv11, no-tlsv13)
+        )
+    );
+}};
+source net4_tls13 {{
+    network(
+        ip("127.0.0.1")
+        transport("tls")
+        port({12})
+        tls(
+            key-file("{0}/syslog.key")
+            cert-file("{0}/syslog.pub")
+            peer-verify(optional-untrusted)
+            ssl-options(no-tlsv1, no-tlsv11, no-tlsv12)
+        )
+    );
+}};
 
 
 destination all {{
@@ -180,6 +236,26 @@ log {{
     filter(f_messages);
     destination(all);
 }};
+log {{
+    source(net4_tls10);
+    filter(f_messages);
+    destination(all);
+}};
+log {{
+    source(net4_tls11);
+    filter(f_messages);
+    destination(all);
+}};
+log {{
+    source(net4_tls12);
+    filter(f_messages);
+    destination(all);
+}};
+log {{
+    source(net4_tls13);
+    filter(f_messages);
+    destination(all);
+}};
         """
 
         config = config.format(
@@ -192,6 +268,10 @@ log {{
             SOCKET_PORT6_TLS,
             SOCKET_PORT4_MUTUAL_TLS,
             SOCKET_PORT6_MUTUAL_TLS,
+            SOCKET_PORT4_TLS10,
+            SOCKET_PORT4_TLS11,
+            SOCKET_PORT4_TLS12,
+            SOCKET_PORT4_TLS13,
         )
 
         config_path = os.path.join(self.tmpdir.name, "syslog-ng.conf")
@@ -293,6 +373,70 @@ log {{
         with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
             data = f.read()
             self.assertTrue(uuid_message in data)
+
+    def test_SYSLOGNG_INET4_TLS12(self):
+        test_logger = self._build_logger()
+
+        context = ssl.create_default_context(
+            purpose=ssl.Purpose.SERVER_AUTH, cafile=self.tmpdir.name + "/syslog.pub"
+        )
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
+        context.maximum_version = ssl.TLSVersion.TLSv1_2
+
+        handler = TLSSysLogHandler(
+            address=("127.0.0.1", SOCKET_PORT4_TLS12),
+            socktype=socket.SOCK_STREAM,
+            secure=context,
+        )
+        test_logger.addHandler(handler)
+
+        uuid_message = uuid.uuid4().hex
+        test_logger.critical(uuid_message)
+
+        sleep(2)
+
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
+
+    def test_SYSLOGNG_INET4_TLS13(self):
+        test_logger = self._build_logger()
+
+        context = ssl.create_default_context(
+            purpose=ssl.Purpose.SERVER_AUTH, cafile=self.tmpdir.name + "/syslog.pub"
+        )
+        context.minimum_version = ssl.TLSVersion.TLSv1_3
+
+        handler = TLSSysLogHandler(
+            address=("127.0.0.1", SOCKET_PORT4_TLS13),
+            socktype=socket.SOCK_STREAM,
+            secure=context,
+        )
+        test_logger.addHandler(handler)
+
+        uuid_message = uuid.uuid4().hex
+        test_logger.critical(uuid_message)
+
+        sleep(2)
+
+        with open(os.path.join(self.tmpdir.name, "syslog.log")) as f:
+            data = f.read()
+            self.assertTrue(uuid_message in data)
+
+    def test_SYSLOGNG_INET4_TLS13_TO_TLS12_FAIL(self):
+        test_logger = self._build_logger()
+
+        context = ssl.create_default_context(
+            purpose=ssl.Purpose.SERVER_AUTH, cafile=self.tmpdir.name + "/syslog.pub"
+        )
+        context.minimum_version = ssl.TLSVersion.TLSv1_3
+
+        with self.assertRaises(ssl.SSLError):
+            handler = TLSSysLogHandler(
+                address=("127.0.0.1", SOCKET_PORT4_TLS12),
+                socktype=socket.SOCK_STREAM,
+                secure=context,
+            )
 
     def test_SYSLOGNG_unix_DGRAM(self):
         test_logger = self._build_logger()
