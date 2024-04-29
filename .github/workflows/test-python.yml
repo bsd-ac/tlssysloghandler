@@ -31,6 +31,7 @@ jobs:
       - name: Show OpenSSL ciphers
         run: |
           openssl ciphers -v
+          pipenv run python -c "import ssl; import pprint; pprint.pprint(ssl.create_default_context().get_ciphers())"
       - name: Run tests
         run: |
           pipenv run pytest -vvvv -s
