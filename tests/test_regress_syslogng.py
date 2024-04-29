@@ -383,7 +383,7 @@ log {{
         context = ssl.create_default_context(
             purpose=ssl.Purpose.SERVER_AUTH, cafile=self.tmpdir.name + "/syslog.pub"
         )
-        context.set_ciphers('ALL:@SECLEVEL=0')
+        context.set_ciphers("ALL:@SECLEVEL=0")
         context.minimum_version = ssl.TLSVersion.TLSv1
         context.maximum_version = ssl.TLSVersion.TLSv1
 
