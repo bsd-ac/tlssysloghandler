@@ -16,15 +16,22 @@ jobs:
           python-version:
             - 3.11
             - 3.12
+          logger:
+            - syslog-ng
+            - rsyslog
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Install logger
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ matrix.logger }}
       - name: Setup python
         id: setup-python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install dependencies
+      - name: Install python dependencies
         run: |
           pipx install pipenv
           pipenv install --dev --python ${{ steps.setup-python.outputs.python-path }}
