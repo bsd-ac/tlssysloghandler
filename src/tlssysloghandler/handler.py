@@ -1,8 +1,9 @@
 import socket
+import sys
 import syslog
 
 from logging.handlers import SYSLOG_UDP_PORT, SysLogHandler
-from typing import Union
+from typing import Optional, Union
 
 try:
     import ssl
@@ -18,11 +19,15 @@ class TLSSysLogHandler(SysLogHandler):
         address: Union[str, tuple[str, str]] = ("localhost", SYSLOG_UDP_PORT),
         facility: int = syslog.LOG_USER,
         socktype: socket.SocketType = socket.SOCK_DGRAM,
-        timeout=None,
+        timeout: Optional[float] = None,
         secure: Union[bool, dict, str, ssl.SSLContext] = False,
     ):
         self.secure = secure
-        super(TLSSysLogHandler, self).__init__(address, facility, socktype, timeout)
+        if sys.version_info.minor >= 14:
+            super(TLSSysLogHandler, self).__init__(address, facility, socktype, timeout)
+        else:
+            super(TLSSysLogHandler, self).__init__(address, facility, socktype)
+            self.timeout = timeout
 
     def createSocket(self):
         """
