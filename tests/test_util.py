@@ -4,7 +4,6 @@ import multiprocessing
 import concurrent.futures
 import os
 import tempfile
-from time import sleep
 from unittest import TestCase
 
 from cryptography import x509

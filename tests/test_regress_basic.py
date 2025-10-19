@@ -267,7 +267,7 @@ class TestTLSSysLogHandlerE2E(TestCertManager):
 
         # normal secure connect should not work
         with self.assertRaises(ssl.SSLCertVerificationError):
-            handler = TLSSysLogHandler(
+            TLSSysLogHandler(
                 address=socket_addr, socktype=socket.SOCK_STREAM, secure=True
             )
 
@@ -288,7 +288,7 @@ class TestTLSSysLogHandlerE2E(TestCertManager):
         # normal secure connect should not work
         logger_socket_addr = ("secure-logging.example.com.", SOCKET_PORT)
         with self.assertRaises(ssl.SSLCertVerificationError):
-            handler = TLSSysLogHandler(
+            TLSSysLogHandler(
                 address=logger_socket_addr,
                 socktype=socket.SOCK_STREAM,
                 secure={"cafile": self.pub_key},

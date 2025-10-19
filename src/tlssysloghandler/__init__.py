@@ -1,1 +1,1 @@
-from .handler import TLSSysLogHandler
+from .handler import TLSSysLogHandler as TLSSysLogHandler

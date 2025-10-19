@@ -25,5 +25,7 @@ License = "https://github.com/bsd-ac/tlssysloghandler/blob/main/LICENSE"
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.isort]
-profile = "black"
+[dependency-groups]
+dev = [
+    "ruff>=0.14.1",
+]

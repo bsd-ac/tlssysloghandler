@@ -16,29 +16,32 @@ jobs:
           python-version:
             - 3.11
             - 3.12
+            - 3.13
+            - 3.14
           logger:
             - syslog-ng
             - rsyslog
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v5
       - name: Install logger
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ matrix.logger }}
       - name: Setup python
         id: setup-python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v7
       - name: Install python dependencies
         run: |
-          pipx install pipenv
-          pipenv install --dev --python ${{ steps.setup-python.outputs.python-path }}
+          uv sync --dev
       - name: Show OpenSSL ciphers
         run: |
           openssl ciphers -v
-          pipenv run python -c "import ssl; import pprint; ctx = ssl.create_default_context(); ctx.set_ciphers('ALL:@SECLEVEL=0'); pprint.pprint(ctx.get_ciphers())"
+          uv run python -c "import ssl; import pprint; ctx = ssl.create_default_context(); ctx.set_ciphers('ALL:@SECLEVEL=0'); pprint.pprint(ctx.get_ciphers())"
       - name: Run tests
         run: |
-          pipenv run pytest -vvvv -s
+          uv run pytest -vvvv -s

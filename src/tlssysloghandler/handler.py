@@ -18,10 +18,11 @@ class TLSSysLogHandler(SysLogHandler):
         address: Union[str, tuple[str, str]] = ("localhost", SYSLOG_UDP_PORT),
         facility: int = syslog.LOG_USER,
         socktype: socket.SocketType = socket.SOCK_DGRAM,
+        timeout=None,
         secure: Union[bool, dict, str, ssl.SSLContext] = False,
     ):
         self.secure = secure
-        super(TLSSysLogHandler, self).__init__(address, facility, socktype)
+        super(TLSSysLogHandler, self).__init__(address, facility, socktype, timeout)
 
     def createSocket(self):
         """
@@ -57,6 +58,8 @@ class TLSSysLogHandler(SysLogHandler):
                 err = sock = None
                 try:
                     sock = socket.socket(af, socktype, proto)
+                    if self.timeout:
+                        sock.settimeout(self.timeout)
                     if self.secure:
                         if not _have_ssl:
                             raise RuntimeError(
