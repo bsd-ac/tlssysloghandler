@@ -26,8 +26,8 @@ class TLSSysLogHandler(SysLogHandler):
         if sys.version_info.minor >= 14:
             super(TLSSysLogHandler, self).__init__(address, facility, socktype, timeout)
         else:
-            super(TLSSysLogHandler, self).__init__(address, facility, socktype)
             self.timeout = timeout
+            super(TLSSysLogHandler, self).__init__(address, facility, socktype)
 
     def createSocket(self):
         """
