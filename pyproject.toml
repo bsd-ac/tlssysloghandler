@@ -27,5 +27,8 @@ where = ["src"]
 
 [dependency-groups]
 dev = [
+    "cryptography>=46.0.3",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
     "ruff>=0.14.1",
 ]
