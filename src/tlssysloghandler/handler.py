@@ -20,6 +20,7 @@ class TLSSysLogHandler(SysLogHandler):
         facility: int = syslog.LOG_USER,
         socktype: socket.SocketType = socket.SOCK_DGRAM,
         timeout: Optional[float] = None,
+        *,  # force secure to be a keyword-only argument as it's an overloading of upstream
         secure: Union[bool, dict, str, ssl.SSLContext] = False,
     ):
         self.secure = secure
