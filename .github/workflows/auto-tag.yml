@@ -6,10 +6,10 @@ on:
 jobs:
   build:
     name: Tag main using pyproject.toml
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout main
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
       with:
         token: ${{ secrets.TLSSYSLOG_TAGGING_PAT }}
     - name: The new tag

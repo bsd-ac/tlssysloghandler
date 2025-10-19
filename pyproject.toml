@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tlssysloghandler"
-version = "1.0.3"
+version = "2.0.0"
 description = "SysLogHandler with TLS"
 readme = "README.rst"
 license = {text = "ISC"}
@@ -25,5 +25,10 @@ License = "https://github.com/bsd-ac/tlssysloghandler/blob/main/LICENSE"
 [tool.setuptools.packages.find]
 where = ["src"]
 
-[tool.isort]
-profile = "black"
+[dependency-groups]
+dev = [
+    "cryptography>=46.0.3",
+    "pytest>=8.4.2",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.14.1",
+]

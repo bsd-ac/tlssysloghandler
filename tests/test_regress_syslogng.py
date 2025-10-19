@@ -453,7 +453,7 @@ log {{
             self.assertTrue(uuid_message in data)
 
     def test_SYSLOGNG_INET4_TLS13_TO_TLS12_FAIL(self):
-        test_logger = self._build_logger()
+        self._build_logger()
 
         context = ssl.create_default_context(
             purpose=ssl.Purpose.SERVER_AUTH, cafile=self.tmpdir.name + "/syslog.pub"
@@ -461,7 +461,7 @@ log {{
         context.minimum_version = ssl.TLSVersion.TLSv1_3
 
         with self.assertRaises(ssl.SSLError):
-            handler = TLSSysLogHandler(
+            TLSSysLogHandler(
                 address=("127.0.0.1", SOCKET_PORT4_TLS12),
                 socktype=socket.SOCK_STREAM,
                 secure=context,

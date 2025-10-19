@@ -1,8 +1,9 @@
 import socket
+import sys
 import syslog
 
 from logging.handlers import SYSLOG_UDP_PORT, SysLogHandler
-from typing import Union
+from typing import Optional, Union
 
 try:
     import ssl
@@ -18,10 +19,16 @@ class TLSSysLogHandler(SysLogHandler):
         address: Union[str, tuple[str, str]] = ("localhost", SYSLOG_UDP_PORT),
         facility: int = syslog.LOG_USER,
         socktype: socket.SocketType = socket.SOCK_DGRAM,
+        timeout: Optional[float] = None,
+        *,  # force secure to be a keyword-only argument as it's an overloading of upstream
         secure: Union[bool, dict, str, ssl.SSLContext] = False,
     ):
         self.secure = secure
-        super(TLSSysLogHandler, self).__init__(address, facility, socktype)
+        if sys.version_info.minor >= 14:
+            super(TLSSysLogHandler, self).__init__(address, facility, socktype, timeout)
+        else:
+            self.timeout = timeout
+            super(TLSSysLogHandler, self).__init__(address, facility, socktype)
 
     def createSocket(self):
         """
@@ -57,6 +64,8 @@ class TLSSysLogHandler(SysLogHandler):
                 err = sock = None
                 try:
                     sock = socket.socket(af, socktype, proto)
+                    if self.timeout:
+                        sock.settimeout(self.timeout)
                     if self.secure:
                         if not _have_ssl:
                             raise RuntimeError(
