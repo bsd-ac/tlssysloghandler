@@ -24,18 +24,18 @@ jobs:
             - rsyslog
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Install logger
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ matrix.logger }}
       - name: Setup python
         id: setup-python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: ${{ matrix.python-version }}
       - name: Setup uv
-        uses: astral-sh/setup-uv@v7
+        uses: astral-sh/setup-uv@v10
       - name: Install python dependencies
         run: |
           uv sync --dev

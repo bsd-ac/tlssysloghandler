@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout main
-      uses: actions/checkout@v5
+      uses: actions/checkout@v7
       with:
         token: ${{ secrets.TLSSYSLOG_TAGGING_PAT }}
     - name: The new tag
