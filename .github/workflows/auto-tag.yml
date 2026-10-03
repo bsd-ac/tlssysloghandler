@@ -9,6 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-actions
+    permissions:
+      contents: read
+      id-token: write
     steps:
     - name: Checkout main
       uses: actions/checkout@v7

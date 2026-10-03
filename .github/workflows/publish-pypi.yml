@@ -12,6 +12,7 @@ jobs:
       name: pypi
       url: https://pypi.org/p/tlssysloghandler
     permissions:
+      contents: read
       id-token: write
     steps:
       - name: Checkout code
