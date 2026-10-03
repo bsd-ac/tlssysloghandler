@@ -7,6 +7,8 @@ jobs:
   build:
     name: Tag main using pyproject.toml
     runs-on: ubuntu-latest
+    environment:
+      name: github-actions
     steps:
     - name: Checkout main
       uses: actions/checkout@v7
