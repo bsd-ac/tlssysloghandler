@@ -41,7 +41,7 @@ class TLSSysLogHandler(SysLogHandler):
         address = self.address
         socktype = self.socktype
 
-        if isinstance(address, str):
+        if not isinstance(address, (list, tuple)):
             self.unixsocket = True
             # Syslog server may be unavailable during handler initialisation.
             # C's openlog() function also ignores connection errors.
