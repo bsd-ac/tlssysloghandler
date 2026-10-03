@@ -8,7 +8,7 @@ jobs:
     name: Tag main using pyproject.toml
     runs-on: ubuntu-latest
     environment:
-      name: github-actions
+      name: tagger
     permissions:
       contents: read
       id-token: write
